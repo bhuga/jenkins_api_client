@@ -779,6 +779,9 @@ module JenkinsApi
         expected_build_id = current_build_id > 0 ? current_build_id + 1 : 1
 
         params = {} if params.nil? or params.empty?
+        post_params = params.map { |k, v| { :name => k, :value => v } }
+        params = { :parameter => post_params }
+
         response = @client.api_post_request("/job/#{path_encode job_name}/build",
           params,
           true)
