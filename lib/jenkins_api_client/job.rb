@@ -692,10 +692,14 @@ module JenkinsApi
         msg = "Building job '#{job_name}'"
         msg << " with parameters: #{params.inspect}" unless params.empty?
         @logger.info msg
-        build_endpoint = params.empty? ? "build" : "buildWithParameters"
         raw_response = return_build_number
+
+        params = {} if params.nil? or params.empty?
+        post_params = params.map { |k, v| { :name => k, :value => v } }
+        params = { :parameter => post_params }
+
         response =@client.api_post_request(
-          "/job/#{job_name}/#{build_endpoint}",
+          "/job/#{job_name}/build",
           params,
           raw_response
         )
