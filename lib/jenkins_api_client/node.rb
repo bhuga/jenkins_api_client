@@ -243,8 +243,14 @@ module JenkinsApi
         define_method("is_#{meth_suffix}?") do |node_name|
           @logger.info "Obtaining '#{meth_suffix}' property of '#{node_name}'"
           response_json = @client.api_get_request("/computer")
-          resp = response_json["computer"][index(node_name)]["#{meth_suffix}"]
-          resp =~ /False/i ? false : true
+
+          node_data = response_json["computer"].detect do |node|
+            node["displayName"] == node_name
+          end
+
+          raise "no node called #{node_name}" if node_data.nil?
+
+          node_data[meth_suffix]
         end
       end
 
